@@ -1,0 +1,949 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Zumra Pool: concept prototype for Shariah-compliant micro-investing.">
+<title>Zumra Pool</title>
+<meta name="theme-color" content="#3a1560">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --purple: #3c1764;
+  --purple-d: #2a0f45;
+  --header: #2f1150;
+  --gold: #e5b021;
+  --teal: #4fbfa8;
+  --teal-t: #8fd8c8;
+  --ink: #2b2140;
+  --grey: #737380;
+  --line: #e6e4ea;
+  --tabbg: #f5f4f7;
+  --sk: #e9e8ec;
+  --font: "Montserrat", "Gotham", "Segoe UI", sans-serif;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; height: 100%; }
+body { font-family: var(--font); background: #1a0b2a; display: flex; align-items: center; justify-content: center; }
+button { font-family: inherit; border: 0; background: none; cursor: pointer; padding: 0; color: inherit; }
+input { font-family: inherit; }
+svg { display: block; }
+
+/* device: phone frame on desktop, full screen on a phone */
+.device { width: 390px; height: 844px; border-radius: 48px; padding: 11px; background: #0b0710; box-shadow: 0 30px 80px rgba(0,0,0,.55), inset 0 0 0 2px #2c2236; }
+.screen { position: relative; width: 100%; height: 100%; border-radius: 38px; overflow: hidden; background: #fff; display: flex; flex-direction: column; }
+@media (max-width: 500px) {
+  body { display: block; background: var(--purple); }
+  .device { width: 100%; height: 100dvh; padding: 0; border-radius: 0; box-shadow: none; }
+  .screen { border-radius: 0; }
+}
+
+/* status bar */
+.sbar { flex: none; height: 47px; display: flex; align-items: center; justify-content: space-between; padding: 6px 26px 0 30px; color: #fff; font-size: 14px; font-weight: 600; background: var(--purple); position: relative; z-index: 5; }
+.sbar.clear { background: transparent; position: absolute; left: 0; right: 0; top: 0; }
+.sbar .r { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; }
+.bat { width: 24px; height: 12px; border: 1.5px solid rgba(255,255,255,.8); border-radius: 3.5px; padding: 1.5px; position: relative; }
+.bat::after { content: ""; position: absolute; right: -4px; top: 3px; width: 2px; height: 4px; background: rgba(255,255,255,.8); border-radius: 0 1px 1px 0; }
+.bat i { display: block; height: 100%; width: 70%; background: #fff; border-radius: 1.5px; }
+
+.view { position: absolute; inset: 0; display: flex; flex-direction: column; }
+.hidden { display: none !important; }
+
+/* ---------- splash ---------- */
+.splash { background: radial-gradient(120% 80% at 30% 20%, #4a1d78 0%, #3a1662 45%, #2a0f45 100%); align-items: center; justify-content: center; }
+.splash .lb { width: 92px; height: 3px; background: var(--gold); border-radius: 2px; overflow: hidden; margin-top: 18px; }
+.splash .lb i { display: block; height: 100%; width: 0; background: #fff; border-radius: 2px; animation: load 2s ease-out forwards; }
+@keyframes load { to { width: 64%; } }
+.homebar { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 134px; height: 5px; border-radius: 3px; background: rgba(255,255,255,.85); }
+
+/* ---------- login ---------- */
+.login { background: linear-gradient(170deg, #42196c 0%, #34145a 45%, #2a1046 100%); color: #fff; padding: 47px 24px 0; }
+.login .top { display: flex; justify-content: space-between; align-items: center; margin-top: 22px; height: 24px; }
+.login .lang { font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 4px; }
+.login .logo { display: flex; justify-content: center; margin-top: -10px; }
+.seg { display: flex; width: 215px; height: 40px; margin: 20px auto 0; border: 1px solid rgba(255,255,255,.55); border-radius: 4px; overflow: hidden; }
+.seg button { flex: 1; font-size: 14px; font-weight: 500; color: #fff; }
+.seg button.on { background: var(--gold); color: #2b1a00; }
+.fld { display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,.28); height: 52px; margin-top: 18px; }
+.fld input { flex: 1; min-width: 0; background: none; border: 0; outline: none; color: #fff; font-size: 15px; font-weight: 500; letter-spacing: .01em; }
+.fld input::placeholder { color: rgba(255,255,255,.45); }
+.fld svg { opacity: .8; }
+.signin { width: 100%; height: 47px; margin-top: 40px; border-radius: 4px; background: var(--teal); color: #fff; font-size: 15px; font-weight: 500; position: relative; }
+.signin .spin { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+.links { display: flex; justify-content: space-between; margin-top: 26px; font-size: 14px; font-weight: 500; color: var(--gold); }
+.faceid { display: flex; justify-content: center; margin-top: 26px; }
+.register { width: 100%; height: 47px; margin-top: 30px; border: 1px solid rgba(255,255,255,.85); border-radius: 4px; color: var(--teal-t); font-size: 15px; font-weight: 500; }
+.resume { display: block; margin: 22px auto 0; color: var(--gold); font-size: 14.5px; font-weight: 500; }
+.bump { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); }
+
+/* spinner (white disc with gold arc, as in the app) */
+.spin { width: 38px; height: 38px; border-radius: 50%; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.18); display: grid; place-items: center; }
+.spin i { width: 26px; height: 26px; border-radius: 50%; border: 3px solid transparent; border-top-color: var(--gold); border-right-color: var(--gold); animation: rot .8s linear infinite; }
+@keyframes rot { to { transform: rotate(360deg); } }
+
+/* Face ID sheet */
+.fid { position: absolute; inset: 0; display: grid; place-items: center; z-index: 20; }
+.fid .box { width: 112px; height: 124px; border-radius: 22px; background: rgba(40,40,46,.86); backdrop-filter: blur(10px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: #fff; font-size: 13px; font-weight: 600; animation: pop .2s ease-out; }
+@keyframes pop { from { transform: scale(.85); opacity: 0; } }
+.fid .ring { width: 54px; height: 54px; border-radius: 50%; border: 2.5px solid #fff; display: grid; place-items: center; }
+
+/* ---------- app shell (home / do more) ---------- */
+.app { background: #fff; }
+.app .body { flex: 1; overflow-y: auto; overflow-x: hidden; position: relative; scrollbar-width: none; }
+.app .body::-webkit-scrollbar { display: none; }
+.nav { flex: none; height: 76px; border-top: 1px solid var(--line); background: #fff; display: flex; align-items: flex-start; justify-content: space-around; padding: 10px 4px 0; position: relative; }
+.nav button { width: 72px; display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: var(--grey); }
+.nav button svg { color: #6c6c78; }
+.nav .menu { margin-top: -22px; }
+.nav .menu .c { width: 46px; height: 46px; border-radius: 50%; background: var(--gold); display: grid; place-items: center; box-shadow: 0 2px 6px rgba(0,0,0,.12); }
+.nav .menu span { margin-top: -3px; }
+
+/* home */
+.hhead { background: linear-gradient(180deg, #35135a 0%, #3d1868 100%); padding: 0 16px 14px; color: #fff; }
+.tabs3 { display: flex; align-items: center; height: 52px; gap: 18px; font-size: 15px; font-weight: 500; }
+.tabs3 button { height: 100%; position: relative; color: #fff; padding: 0 2px; }
+.tabs3 button.on { color: var(--gold); }
+.tabs3 button.on::after { content: ""; position: absolute; left: -6px; right: -6px; bottom: 0; height: 2px; background: var(--gold); }
+.tabs3 .gear { margin-left: auto; }
+.acard { width: 276px; height: 152px; margin: 26px auto 0; background: var(--gold); border-radius: 8px; padding: 14px 16px; color: #2a1a00; position: relative; overflow: hidden; }
+.acard::before { content: ""; position: absolute; inset: 0; background: radial-gradient(140% 70% at 10% 120%, rgba(255,255,255,.18), transparent 60%), linear-gradient(170deg, transparent 55%, rgba(0,0,0,.05) 56%, transparent 75%); }
+.acard .r1 { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; position: relative; }
+.acard .r1 span { font-weight: 500; font-size: 12px; }
+.acard .t { font-size: 11.5px; font-weight: 500; margin-top: 5px; position: relative; }
+.acard .bal { position: absolute; right: 22px; bottom: 12px; text-align: right; font-size: 12.5px; }
+.acard .bal b { font-size: 19px; font-weight: 600; }
+.acard .bal small { display: block; font-size: 12px; margin-top: 2px; margin-right: 22px; }
+.acard .bal svg { position: absolute; right: -14px; top: 6px; }
+.arow { display: flex; justify-content: center; position: relative; font-size: 13px; margin-top: 16px; }
+.arow a { position: absolute; right: 50px; display: flex; align-items: center; gap: 4px; cursor: pointer; }
+.banner { margin: 16px 14px 0; height: 78px; border-radius: 6px; overflow: hidden; position: relative; background: linear-gradient(100deg, #3a1a6e 0%, #4b2590 55%, #5b38a8 100%); color: #fff; }
+.banner::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(115deg, transparent 0 22px, rgba(255,255,255,.035) 22px 26px); }
+.banner .amt { position: absolute; left: 14px; top: 8px; background: #2a1258; padding: 0 6px; font-size: 27px; font-weight: 700; letter-spacing: -.01em; }
+.banner p { position: absolute; left: 18px; top: 43px; margin: 0; font-size: 11px; line-height: 1.3; font-weight: 500; width: 236px; }
+.banner svg { position: absolute; right: 8px; top: 4px; }
+.lt { text-align: center; font-size: 16.5px; font-weight: 600; color: #222; margin: 30px 0 18px; }
+.skrow { display: flex; gap: 8px; padding: 0 14px; margin-bottom: 26px; }
+.sk { height: 12px; border-radius: 6px; background: linear-gradient(90deg, var(--sk) 0%, #f5f4f7 50%, var(--sk) 100%); background-size: 200% 100%; animation: sh 1.2s linear infinite; }
+@keyframes sh { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+.empty { text-align: center; color: var(--grey); font-size: 13px; padding: 10px 20px 30px; }
+.acard.sk-card .skl { height: 9px; border-radius: 5px; background: linear-gradient(90deg, rgba(255,255,255,.35), rgba(255,255,255,.85)); margin-top: 10px; }
+.listsk { margin: 26px 14px 0; border: 1px solid var(--line); border-radius: 8px; height: 76px; display: flex; align-items: center; gap: 14px; padding: 0 16px; }
+
+/* do more */
+.dhead { background: var(--header); height: 56px; color: #fff; display: flex; align-items: center; justify-content: center; position: relative; font-size: 15.5px; font-weight: 500; flex: none; }
+.dhead .gear { position: absolute; right: 16px; }
+.dhead .back { position: absolute; left: 12px; }
+.dtabs { background: var(--tabbg); height: 64px; display: flex; align-items: center; justify-content: space-around; padding: 0 10px; flex: none; }
+.dtabs button { height: 100%; font-size: 15.5px; font-weight: 500; color: #2a2740; position: relative; padding: 0 2px; }
+.dtabs button.on::after { content: ""; position: absolute; left: -2px; right: -2px; bottom: 6px; height: 2px; background: var(--gold); }
+.dtabs .dot { position: absolute; top: 18px; right: -8px; width: 7px; height: 7px; border-radius: 50%; background: #e0242f; }
+
+.car { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 22px 36px 0; scrollbar-width: none; cursor: grab; }
+.car::-webkit-scrollbar { display: none; }
+.car.drag { scroll-snap-type: none; cursor: grabbing; }
+.pcard { flex: 0 0 318px; height: 354px; border-radius: 10px; position: relative; overflow: hidden; scroll-snap-align: center; color: #fff; padding: 22px 20px; user-select: none; }
+.pcard .wave { position: absolute; left: 0; right: 0; top: 110px; height: 110px; opacity: .9; pointer-events: none; }
+.pcard h3 { margin: 0 0 10px; font-size: 17px; font-weight: 600; position: relative; }
+.pcard.nw h3 { margin-right: 52px; }
+.pcard p { margin: 0; font-size: 14px; line-height: 1.52; font-weight: 500; position: relative; }
+.pcard ul { list-style: none; margin: 14px 0 0; padding: 0; font-size: 14px; line-height: 1.5; position: relative; }
+.pcard li { display: flex; gap: 8px; margin-bottom: 8px; }
+.pcard li svg { flex: none; margin-top: 3px; }
+.pcard .add { position: absolute; left: 50%; bottom: 30px; transform: translateX(-50%); width: 150px; height: 47px; background: #fff; border-radius: 3px; color: #3a2a5c; font-size: 15px; font-weight: 500; }
+.pcard .add:active { background: #f0edf5; }
+.ribbon { position: absolute; top: 0; right: 0; width: 92px; height: 92px; overflow: hidden; pointer-events: none; }
+.ribbon span { position: absolute; top: 18px; right: -30px; width: 130px; height: 28px; background: var(--gold); transform: rotate(45deg); color: #1a1200; font-size: 13.5px; font-weight: 600; display: flex; align-items: center; justify-content: center; font-style: italic; }
+.dots { display: flex; justify-content: center; gap: 6px; margin: 18px 0 30px; }
+.dots i { width: 7px; height: 7px; border-radius: 50%; background: #e2e1e6; cursor: pointer; }
+.dots i.on { background: var(--teal); }
+.g-saveplus { background: linear-gradient(202deg, #3f9b9b 0%, #3e7f92 30%, #44517f 62%, #4a2c76 100%); }
+.g-special { background: linear-gradient(202deg, #3f9b9b 0%, #3e7f92 30%, #44517f 62%, #4a2c76 100%); }
+.g-premium { background: linear-gradient(200deg, #8b1a5c 0%, #74195f 40%, #561b6c 100%); }
+.g-ida { background: linear-gradient(200deg, #8c1b5e 0%, #7a1a62 40%, #5c1c6e 100%); }
+.g-zumra { background: linear-gradient(202deg, #4bb3a2 0%, #3d8494 30%, #4a4a86 62%, #552988 100%); }
+.noff { text-align: center; color: var(--grey); font-size: 14px; padding: 80px 30px; }
+.toast { position: absolute; left: 14px; right: 14px; top: 58px; background: #2b2140; color: #fff; border-radius: 8px; padding: 12px 14px; font-size: 13px; z-index: 30; animation: pop .2s ease-out; }
+
+
+/* ================= Zumra Pool ================= */
+#v-zumra .dhead .bell { position: absolute; right: 14px; }
+#v-zumra .dhead .bell .bd { position: absolute; top: -4px; right: -5px; min-width: 16px; height: 16px; border-radius: 8px; background: #e0242f; color: #fff; font-size: 10px; font-weight: 700; display: grid; place-items: center; padding: 0 4px; }
+#zBody { background: #f5f4f7; }
+.z { padding: 14px 14px 26px; color: var(--ink); font-size: 13.5px; }
+.z h2 { font-size: 17px; margin: 4px 2px 4px; font-weight: 700; color: #241a38; }
+.z .lead { color: var(--grey); font-size: 12.5px; margin: 0 2px 12px; line-height: 1.5; }
+.zc { background: #fff; border-radius: 10px; padding: 14px; box-shadow: 0 1px 3px rgba(40,20,70,.07); margin-bottom: 12px; }
+.zc h4 { margin: 0 0 8px; font-size: 14px; font-weight: 700; color: #241a38; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.zc h4 a { font-size: 12px; font-weight: 600; color: var(--purple); cursor: pointer; }
+.zc p { margin: 0; line-height: 1.55; color: #4a4458; font-size: 13px; }
+.zsec { font-size: 11.5px; font-weight: 700; color: var(--grey); letter-spacing: .06em; text-transform: uppercase; margin: 18px 2px 8px; display: flex; justify-content: space-between; align-items: center; }
+.zsec a { text-transform: none; letter-spacing: 0; color: var(--purple); cursor: pointer; font-size: 12px; }
+.zhero { background: linear-gradient(202deg, #4bb3a2 0%, #3d8494 32%, #4a4a86 66%, #552988 100%); color: #fff; border-radius: 12px; padding: 16px; position: relative; overflow: hidden; margin-bottom: 12px; }
+.zhero .k { font-size: 12px; opacity: .85; }
+.zhero .v { font-size: 26px; font-weight: 700; margin: 4px 0 10px; letter-spacing: -.01em; }
+.zhero .v small { font-size: 13px; font-weight: 600; opacity: .85; margin-right: 4px; }
+.zhero .row { display: flex; gap: 10px; position: relative; }
+.zhero .row div { flex: 1; background: rgba(255,255,255,.12); border-radius: 8px; padding: 8px 10px; font-size: 11px; }
+.zhero .row b { display: block; font-size: 13.5px; margin-top: 2px; }
+.zhero .wave, .zpool .wave { top: 60px; }
+.pos { color: #1d9a72 !important; } .neg { color: #cc3d4a !important; }
+.zhero .pos { color: #b8f2d9 !important; } .zhero .neg { color: #ffc2c8 !important; }
+.zqa { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.zqa button { background: #fff; border-radius: 10px; padding: 12px 6px; display: flex; flex-direction: column; align-items: center; gap: 7px; font-size: 11.5px; font-weight: 600; color: #3a2a5c; box-shadow: 0 1px 3px rgba(40,20,70,.07); }
+.zqa .qi { width: 38px; height: 38px; border-radius: 50%; background: #f1ecf7; color: var(--purple); display: grid; place-items: center; }
+.zqa svg { width: 19px; height: 19px; }
+.zrow { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid #efedf2; }
+.zrow:last-child { border-bottom: 0; }
+.zrow.tap { cursor: pointer; }
+.zrow .ico { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; flex: none; color: #fff; font-weight: 700; font-size: 13px; }
+.zrow .nm { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; color: #241a38; }
+.zrow .nm small { display: block; font-weight: 500; color: var(--grey); font-size: 11.5px; margin-top: 2px; }
+.zrow .am { text-align: right; font-size: 13px; font-weight: 700; white-space: nowrap; }
+.zrow .am small { display: block; font-size: 11px; font-weight: 600; color: var(--grey); margin-top: 3px; }
+.zkv { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px solid #efedf2; font-size: 13px; }
+.zkv:last-child { border-bottom: 0; }
+.zkv span { color: var(--grey); }
+.zkv b { font-weight: 600; text-align: right; color: #241a38; }
+.zkv.total { border-top: 1.5px solid #241a38; border-bottom: 0; margin-top: 4px; padding-top: 12px; }
+.zkv.total b, .zkv.total span { font-weight: 700; color: #241a38; font-size: 14px; }
+.zbtn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 47px; border-radius: 4px; background: var(--teal); color: #fff; font-size: 15px; font-weight: 600; margin-top: 10px; }
+.zbtn.purple { background: var(--purple); }
+.zbtn.ghost { background: #fff; color: var(--purple); box-shadow: inset 0 0 0 1.5px var(--purple); }
+.zbtn.danger { background: #fff; color: #cc3d4a; box-shadow: inset 0 0 0 1.5px #cc3d4a; }
+.zbtn:disabled { opacity: .45; cursor: not-allowed; }
+.zpill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 12px; font-size: 10.5px; font-weight: 700; white-space: nowrap; }
+.zpill.ok { background: #e3f5ee; color: #1d9a72; } .zpill.wait { background: #fdf1dc; color: #b77a0c; } .zpill.bad { background: #fbe7e9; color: #cc3d4a; } .zpill.mut { background: #efedf2; color: var(--grey); }
+.zrisk { display: inline-flex; gap: 3px; vertical-align: middle; margin-left: 6px; }
+.zrisk i { width: 16px; height: 6px; border-radius: 3px; background: #e2dfe8; }
+.zpool .zrisk i { background: rgba(255,255,255,.3); }
+.zrisk i.on { background: currentColor !important; }
+.zpool { border-radius: 12px; color: #fff; padding: 16px; position: relative; overflow: hidden; margin-bottom: 12px; }
+.zpool h3 { margin: 0 0 4px; font-size: 17px; font-weight: 700; position: relative; }
+.zpool .meta { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0 4px; font-size: 11.5px; }
+.zpool .meta div { background: rgba(255,255,255,.12); border-radius: 8px; padding: 8px 10px; }
+.zpool .meta b { display: block; font-size: 13px; margin-top: 2px; }
+.zpool p { position: relative; margin: 0; font-size: 12.8px; line-height: 1.5; opacity: .95; }
+.zpool .zbtn { background: #fff; color: #3a2a5c; position: relative; height: 42px; font-size: 14px; }
+.zpool .rec { position: absolute; top: 12px; right: 12px; background: var(--gold); color: #1a1200; font-size: 10.5px; font-weight: 700; padding: 3px 8px; border-radius: 10px; }
+.z-stable { background: linear-gradient(202deg, #3f9b9b 0%, #3e7f92 35%, #44517f 70%, #4a2c76 100%); }
+.z-balanced { background: linear-gradient(200deg, #6a3fa0 0%, #552988 50%, #3c1764 100%); }
+.z-growth { background: linear-gradient(200deg, #8c1b5e 0%, #7a1a62 40%, #5c1c6e 100%); }
+.zdisc { background: #fdf3df; border: 1px solid #f3dca8; color: #6b4b06; border-radius: 10px; padding: 10px 12px; font-size: 11.5px; line-height: 1.5; margin-bottom: 12px; display: flex; gap: 8px; }
+.zdisc b { color: #4a3304; }
+.zfield { margin-top: 12px; }
+.zfield label { display: block; font-size: 12px; font-weight: 600; color: var(--grey); margin-bottom: 6px; }
+.zin { display: flex; align-items: center; border: 1.5px solid #e2dfe8; border-radius: 8px; background: #fff; height: 50px; padding: 0 12px; gap: 8px; }
+.zin:focus-within { border-color: var(--purple); }
+.zin span { font-weight: 700; color: var(--grey); font-size: 13px; }
+.zin input { flex: 1; min-width: 0; border: 0; outline: none; font-size: 20px; font-weight: 700; color: #241a38; background: none; }
+.zin.err { border-color: #cc3d4a; }
+.zerr { color: #cc3d4a; font-size: 12px; font-weight: 600; margin-top: 6px; }
+.zhint { color: var(--grey); font-size: 11.5px; margin-top: 8px; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.zchips { display: flex; flex-wrap: wrap; gap: 8px; }
+.zchip { padding: 8px 13px; border-radius: 18px; background: #fff; border: 1.5px solid #e2dfe8; font-size: 12.5px; font-weight: 600; color: #3a2a5c; }
+.zchip.on { border-color: var(--purple); background: #f1ecf7; color: var(--purple); }
+.zseg { display: flex; background: #ece9f1; border-radius: 8px; padding: 3px; }
+.zseg button { flex: 1; height: 38px; border-radius: 6px; font-size: 12px; font-weight: 600; color: #5d5670; }
+.zseg button.on { background: #fff; color: var(--purple); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.ztoggle { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; font-size: 13px; font-weight: 600; color: #241a38; }
+.ztoggle small { display: block; color: var(--grey); font-weight: 500; font-size: 11.5px; margin-top: 2px; }
+.sw { width: 44px; height: 26px; border-radius: 13px; background: #d6d2de; position: relative; flex: none; cursor: pointer; transition: background .2s; }
+.sw::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.2); transition: left .2s; }
+.sw.on { background: var(--teal); }
+.sw.on::after { left: 21px; }
+.zcheck { display: flex; gap: 10px; align-items: flex-start; font-size: 12.5px; line-height: 1.5; color: #3a3450; padding: 8px 0; cursor: pointer; }
+.zcheck input { width: 18px; height: 18px; accent-color: var(--purple); margin: 1px 0 0; flex: none; }
+.zcheck a { color: var(--purple); font-weight: 600; }
+.zbig { text-align: center; padding: 26px 18px; }
+.zbig .ci { width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 12px; display: grid; place-items: center; color: #fff; }
+.zbig h3 { margin: 0 0 6px; font-size: 18px; color: #241a38; }
+.zbig p { margin: 0; color: var(--grey); font-size: 13px; line-height: 1.5; }
+.ztl { position: relative; padding-left: 24px; }
+.ztl .ev { position: relative; padding-bottom: 14px; }
+.ztl .ev::before { content: ""; position: absolute; left: -17px; top: 16px; bottom: -2px; width: 2px; background: #e2dfe8; }
+.ztl .ev:last-child::before { display: none; }
+.ztl .ev .d { position: absolute; left: -24px; top: 1px; width: 16px; height: 16px; border-radius: 50%; border: 2px solid #d6d2de; background: #fff; }
+.ztl .ev.done .d { background: var(--teal); border-color: var(--teal); }
+.ztl .ev.now .d { border-color: var(--purple); box-shadow: 0 0 0 4px #ece4f6; }
+.ztl .ev b { font-size: 13px; color: #241a38; }
+.ztl .ev small { display: block; color: var(--grey); font-size: 11.5px; margin-top: 2px; }
+.zftabs { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin-bottom: 12px; }
+.zftabs::-webkit-scrollbar { display: none; }
+.zftabs .zchip { white-space: nowrap; }
+.zlegend { display: grid; gap: 7px; font-size: 12.5px; }
+.zlegend div { display: flex; align-items: center; gap: 8px; }
+.zlegend i { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+.zlegend b { margin-left: auto; }
+.zlist { margin: 0; padding-left: 18px; color: #4a4458; font-size: 13px; line-height: 1.6; }
+.zfaq details { border-bottom: 1px solid #efedf2; padding: 11px 0; }
+.zfaq details:last-child { border-bottom: 0; }
+.zfaq summary { font-size: 13px; font-weight: 600; color: #241a38; cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 10px; }
+.zfaq summary::-webkit-details-marker { display: none; }
+.zfaq summary::after { content: "+"; color: var(--purple); font-weight: 700; }
+.zfaq details[open] summary::after { content: "−"; }
+.zfaq details p { margin: 8px 0 0; color: #4a4458; font-size: 12.8px; line-height: 1.55; }
+.zempty { text-align: center; padding: 22px 16px 8px; }
+.zempty .art { width: 96px; height: 96px; border-radius: 50%; margin: 0 auto 14px; background: #f1ecf7; display: grid; place-items: center; }
+.zempty h3 { margin: 0 0 6px; font-size: 17px; color: #241a38; }
+.zempty p { margin: 0 auto; color: var(--grey); font-size: 13px; line-height: 1.5; max-width: 270px; }
+.zdemo { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; margin-top: 8px; padding: 9px; border-radius: 8px; border: 1.5px dashed #c9bfe0; color: #6b5a8e; font-size: 12px; font-weight: 600; background: #fbfaff; }
+.zq { margin-bottom: 12px; }
+.zq b { display: block; font-size: 13.5px; color: #241a38; margin-bottom: 4px; }
+.zopt { display: flex; gap: 10px; align-items: center; width: 100%; text-align: left; padding: 11px 12px; border-radius: 8px; border: 1.5px solid #e2dfe8; background: #fff; margin-top: 6px; font-size: 12.8px; font-weight: 500; color: #241a38; }
+.zopt .rd { width: 17px; height: 17px; border-radius: 50%; border: 2px solid #d6d2de; flex: none; display: grid; place-items: center; }
+.zopt.on { border-color: var(--purple); background: #f6f1fb; }
+.zopt.on .rd { border-color: var(--purple); }
+.zopt.on .rd::after { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--purple); }
+input.zrange { width: 100%; accent-color: var(--purple); }
+
+:root { color-scheme: dark; }
+body { flex-direction: column; gap: 14px; padding-block: 16px; }
+.caption { color: #bba7d6; font-size: 12.5px; font-weight: 600; text-align: center; letter-spacing: .02em; max-width: 390px; line-height: 1.5; margin: 0; }
+.caption b { color: #fff; }
+#zBack { visibility: hidden; }
+@media (max-width: 500px) { body { padding-block: 0; gap: 0; } .caption { display: none; } }
+</style>
+</head>
+<body>
+<div class="device"><div class="screen" id="screen">
+  <section class="view app" id="v-zumra">
+    <div class="sbar"><span>8:32</span><span class="r">LTE <span class="bat"><i></i></span></span></div>
+    <div class="dhead"><button class="back" id="zBack" aria-label="Back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><span id="zTitle">Zumra Pool</span><button class="bell" id="zBell" aria-label="Notifications"></button></div>
+    <div class="body" id="zBody"></div>
+    <nav class="nav"><button data-nav="home"><svg width="24" height="22" viewBox="0 0 24 22" fill="currentColor"><path d="M12 1 0 11.5h3.3V21h6.4v-6.3h4.6V21h6.4v-9.5H24z"/></svg><span>Home</span></button><button data-nav="portfolio"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18M7 15l4-4 3 3 6-7"/></svg><span>Portfolio</span></button><button class="menu" data-nav="discover"><span class="c"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d1430" stroke-width="2.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span><span>Invest</span></button><button data-nav="history"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg><span>History</span></button><button data-nav="profile"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Profile</span></button></nav>
+  </section>
+</div></div>
+<p class="caption"><b>Zumra Pool</b> · concept prototype for Shariah-compliant investing. Not a real banking app: no real money, accounts or personal data are used.</p>
+<script>
+'use strict';
+/* Standalone shell for the Zumra Pool concept (no host-app screens). */
+function show() {}
+function renderHome() {
+  const atRoot = document.getElementById('zTitle').textContent === 'Zumra Pool';
+  document.getElementById('zBack').style.visibility = atRoot ? 'hidden' : 'visible';
+}
+
+'use strict';
+/* Zumra Pool: prototype of a PROPOSED banking service (not an approved product).
+   The 1% / 2% fees, the 14-day notice period and all returns are design assumptions. */
+const Z = (() => {
+  const POOLS = {
+    stable: {
+      name: 'Stable Pool', risk: 'Low', level: 1, color: '#3f9b9b', min: 50, suggested: 50, rate: 3.5, range: '3–4%',
+      objective: 'Preserve your capital while earning steady, Shariah-compliant profit.',
+      strategy: 'Invests mainly in high-quality sovereign and GCC sukuk and short-term Murabaha placements. Rebalanced every quarter.',
+      alloc: [['Sukuk', 60, '#552988'], ['Murabaha placements', 30, '#4fbfa8'], ['Cash & equivalents', 10, '#e5b021']],
+      hist: [3.1, 2.8, 3.4, 3.9, 3.6],
+      risks: ['Profit-rate changes can lower sukuk prices', 'An issuer may fail to pay (credit risk)', 'Lower long-term growth than equity-based pools'],
+      who: 'Suits first-time investors and short-term goals.',
+    },
+    balanced: {
+      name: 'Balanced Pool', risk: 'Medium', level: 2, color: '#552988', min: 100, suggested: 100, rate: 5.5, range: '5–6%',
+      objective: 'Grow your money steadily with moderate ups and downs.',
+      strategy: 'Mixes sukuk with AAOIFI-screened Shariah equities and income-producing real estate (Ijara). Rebalanced every quarter.',
+      alloc: [['Sukuk', 40, '#552988'], ['Shariah equities', 35, '#4fbfa8'], ['Real estate (Ijara)', 15, '#e5b021'], ['Cash & equivalents', 10, '#b9a5d3']],
+      hist: [6.2, -3.1, 5.8, 7.4, 5.9],
+      risks: ['Equity prices can fall in the short term', 'Real-estate income can drop if tenants leave', 'Profit-rate and credit risk on sukuk'],
+      who: 'Suits medium-term goals of 3–5 years.',
+    },
+    growth: {
+      name: 'Growth Pool', risk: 'High', level: 3, color: '#8c1b5e', min: 100, suggested: 150, rate: 8, range: '7–9%',
+      objective: 'Aim for higher long-term growth and accept bigger swings.',
+      strategy: 'Invests mostly in AAOIFI-screened global and GCC Shariah equities, with some real estate and sukuk for balance.',
+      alloc: [['Shariah equities', 65, '#8c1b5e'], ['Real estate (Ijara)', 15, '#e5b021'], ['Sukuk', 15, '#552988'], ['Cash & equivalents', 5, '#4fbfa8']],
+      hist: [11.8, -9.6, 9.1, 12.4, 8.3],
+      risks: ['Values can fall sharply in market downturns', 'Higher short-term volatility', 'Currency movements on global equities'],
+      who: 'Suits long-term goals of 5+ years.',
+    },
+  };
+  const FEE = 0.01, PERF = 0.02, NOTICE = 14;
+  const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const fd = d => `${d.getDate()} ${MON[d.getMonth()]} ${d.getFullYear()}`;
+  const addD = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+  const nextOn = (from, day) => { const x = new Date(from.getFullYear(), from.getMonth(), day); if (x <= from) x.setMonth(x.getMonth() + 1); return x; };
+  const num = n => Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+  const bd = (n, sign) => (sign && n > 0.0004 ? '+' : n < -0.0004 ? '−' : '') + 'BHD ' + num(n);
+  const pct = n => (n > 0.004 ? '+' : n < -0.004 ? '−' : '') + Math.abs(n).toFixed(2) + '%';
+  const ord = d => d + (d === 1 ? 'st' : 'th');
+
+  const ic = {
+    plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+    out: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>',
+    cal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
+    list: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>',
+    calc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15h.01M8 19h.01M12 19h4"/></svg>',
+    shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>',
+    gauge: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 18a8 8 0 1 1 16 0"/><path d="m12 18 4-6"/></svg>',
+    help: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.7M12 17h.01"/></svg>',
+    user: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
+    check: '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+    x: '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>',
+    clock: '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+    info: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#b77a0c" stroke-width="2.2" stroke-linecap="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M12 11v6"/></svg>',
+    chev: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#a49cb4" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="m9 18 6-6-6-6"/></svg>',
+    bell: '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg>',
+    wave: '<svg class="wave" viewBox="0 0 318 110" preserveAspectRatio="none" style="position:absolute;left:0;right:0;height:110px;pointer-events:none"><path d="M0 46C70 12 140 8 196 20S286 46 318 34V58C276 70 236 50 180 44S72 54 0 84Z" fill="rgba(0,0,0,.10)"/><path d="M0 84C72 54 124 44 180 44S276 70 318 58V66C270 80 230 62 176 58S70 68 0 98Z" fill="rgba(255,255,255,.07)"/></svg>',
+  };
+  const sized = (svg, s) => svg.replace('<svg', `<svg width="${s}" height="${s}"`);
+
+  /* ---------------- state ---------------- */
+  const S = {
+    balance: 2450,
+    today: new Date(2026, 9, 14),
+    holdings: [],        // { pool, net, gross, value, monthly: { amount, day, status, auto } }
+    tx: [],              // { id, date, type, pool, amount, status }
+    hist: [],            // total portfolio value over time
+    notifs: [{ t: 'Important Account Updates', b: 'Zumra Pool is a proposed service shown for demonstration. Terms may change after regulatory and Sharia review.', d: new Date(2026, 9, 14), read: false }],
+    wds: [],
+    draft: null, wdraft: null, cedit: null,
+    risk: null, riskAns: {},
+    calc: { monthly: 100, years: 5, pool: 'balanced' },
+    settings: { notif: true, estatement: true, marketing: false },
+    stack: [], cancelAsk: false, txFilter: 'All', termsDate: null,
+  };
+  let txSeq = 0;
+  const unread = () => S.notifs.filter(n => !n.read).length;
+  const notify = (t, b) => S.notifs.unshift({ t, b, d: new Date(S.today), read: false });
+  const addTx = (type, pool, amount, status = 'Completed') => { const t = { id: ++txSeq, date: new Date(S.today), type, pool, amount, status }; S.tx.unshift(t); return t; };
+  const totals = () => {
+    const v = S.holdings.reduce((a, h) => a + h.value, 0);
+    const net = S.holdings.reduce((a, h) => a + h.net, 0);
+    const gross = S.holdings.reduce((a, h) => a + h.gross, 0);
+    const act = S.holdings.filter(h => h.monthly && h.monthly.status === 'Active');
+    return { v, net, gross, ret: v - net, pct: net ? (v - net) / net * 100 : 0, monthly: act.reduce((a, h) => a + h.monthly.amount, 0), nextDay: act.length ? Math.min(...act.map(h => h.monthly.day)) : 0 };
+  };
+  const recordHist = () => S.hist.push({ d: new Date(S.today), v: totals().v });
+
+  /* ---------------- navigation ---------------- */
+  const TITLES = { home: 'Zumra Pool', discover: 'Investment Pools', pool: 'Pool Details', invest: 'Start Investing', review: 'Review and Confirm', processing: 'Processing', success: 'Confirmation', error: 'Payment Unsuccessful', portfolio: 'My Portfolio', holding: 'Investment Details', contrib: 'Monthly Contributions', withdraw: 'Withdraw Investment', wreview: 'Review Withdrawal', wstatus: 'Withdrawal Status', sharia: 'Sharia & Disclosures', notifs: 'Notifications', history: 'Transaction History', risk: 'Risk Profile', calc: 'Investment Calculator', help: 'Help and Support', profile: 'Profile and Settings' };
+  const cur = () => S.stack[S.stack.length - 1];
+  function go(s, p = {}, replace) { if (replace) S.stack.pop(); S.stack.push({ s, p }); S.cancelAsk = false; render(true); }
+  function back() { if (S.stack.length > 1) { S.stack.pop(); render(true); } else { S.stack = []; show('more'); } }
+  function home() { S.stack = [{ s: 'home', p: {} }]; render(true); }
+  function open() { if (!S.stack.length) S.stack = [{ s: 'home', p: {} }]; show('zumra'); render(true); }
+
+  let toastT;
+  function toast(msg) {
+    const old = document.querySelector('#v-zumra .toast'); if (old) old.remove();
+    const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+    document.getElementById('v-zumra').appendChild(t);
+    clearTimeout(toastT); toastT = setTimeout(() => t.remove(), 2600);
+  }
+
+  function render(top) {
+    const c = cur(); if (!c) return;
+    const body = document.getElementById('zBody'), y = body.scrollTop;
+    document.getElementById('zTitle').textContent = TITLES[c.s];
+    const n = unread();
+    document.getElementById('zBell').innerHTML = ic.bell + (n ? `<span class="bd">${n}</span>` : '');
+    body.innerHTML = `<div class="z">${SCREENS[c.s](c.p)}</div>`;
+    body.scrollTop = top ? 0 : y;
+    renderHome(false);
+  }
+
+  /* ---------------- shared pieces ---------------- */
+  const disclaimer = () => `<div class="zdisc">${ic.info}<div><b>Prototype.</b> Zumra Pool is a proposed concept, not a real banking product. The 1% and 2% fees, the ${NOTICE}-day redemption period and all returns shown are design assumptions that need regulatory, Sharia and legal approval.</div></div>`;
+  const riskBars = p => `<span class="zrisk" style="color:${p.level === 1 ? '#3f9b9b' : p.level === 2 ? '#e5b021' : '#cc3d4a'}">${[1, 2, 3].map(i => `<i class="${i <= p.level ? 'on' : ''}"></i>`).join('')}</span>`;
+  const poolIco = k => `<div class="ico" style="background:${POOLS[k].color}">${POOLS[k].name[0]}</div>`;
+  const pill = s => `<span class="zpill ${/Completed|Active/.test(s) ? 'ok' : /Pending|Processing|Notice|Paused/.test(s) ? 'wait' : /Failed|Cancelled/.test(s) ? 'bad' : 'mut'}">${s}</span>`;
+  const TXI = { Contribution: ['#552988', '+'], 'Operational Fee': ['#a49cb4', '%'], 'Performance Fee': ['#a49cb4', '%'], 'Investment Return': ['#1d9a72', '↗'], Withdrawal: ['#e5b021', '↑'] };
+  const txRow = t => `<div class="zrow"><div class="ico" style="background:${TXI[t.type][0]}">${TXI[t.type][1]}</div>
+    <div class="nm">${t.type}<small>${POOLS[t.pool].name} · ${fd(t.date)}</small></div>
+    <div class="am ${t.type === 'Investment Return' ? 'pos' : ''}">${bd(t.amount, true)}<small>${pill(t.status)}</small></div></div>`;
+
+  function donut(alloc) {
+    const r = 42, C = 2 * Math.PI * r; let off = 0;
+    const segs = alloc.map(([, p, col]) => { const len = C * p / 100; const s = `<circle cx="55" cy="55" r="${r}" fill="none" stroke="${col}" stroke-width="16" stroke-dasharray="${len - 1.5} ${C - len + 1.5}" stroke-dashoffset="${-off}" transform="rotate(-90 55 55)"/>`; off += len; return s; }).join('');
+    return `<div style="display:flex;gap:16px;align-items:center"><svg width="110" height="110" viewBox="0 0 110 110" style="flex:none">${segs}</svg>
+      <div class="zlegend" style="flex:1">${alloc.map(([n, p, col]) => `<div><i style="background:${col}"></i>${n}<b>${p}%</b></div>`).join('')}</div></div>`;
+  }
+  function bars(vals) {
+    const W = 300, H = 120, max = Math.max(...vals.map(Math.abs)) * 1.2, zero = H / 2 + 6, bw = 34, gap = (W - bw * vals.length) / (vals.length + 1);
+    return `<svg viewBox="0 0 ${W} ${H + 18}" width="100%"><line x1="0" x2="${W}" y1="${zero}" y2="${zero}" stroke="#e2dfe8"/>
+      ${vals.map((v, i) => { const h = Math.abs(v) / max * (H / 2 - 6), x = gap + i * (bw + gap), y = v >= 0 ? zero - h : zero;
+        return `<rect x="${x}" y="${y}" width="${bw}" height="${h}" rx="3" fill="${v >= 0 ? '#4fbfa8' : '#e07a85'}"/><text x="${x + bw / 2}" y="${v >= 0 ? y - 4 : y + h + 11}" font-size="10" text-anchor="middle" fill="#4a4458" font-weight="600">${v > 0 ? '+' : ''}${v}%</text><text x="${x + bw / 2}" y="${H + 14}" font-size="10" text-anchor="middle" fill="#8a8399">${2021 + i}</text>`; }).join('')}</svg>`;
+  }
+  function line(points) {
+    if (points.length < 3) return `<div style="text-align:center;color:var(--grey);font-size:12.5px;padding:22px 10px">Your chart builds as your investment grows.</div>`;
+    const W = 310, H = 130, vs = points.map(p => p.v), mn = Math.min(...vs) * 0.98, mx = Math.max(...vs) * 1.02;
+    const x = i => 8 + i * (W - 16) / (points.length - 1), y = v => H - 22 - (v - mn) / (mx - mn || 1) * (H - 34);
+    const pts = points.map((p, i) => `${x(i).toFixed(1)},${y(p.v).toFixed(1)}`).join(' ');
+    const step = Math.max(1, Math.ceil(points.length / 5));
+    return `<svg viewBox="0 0 ${W} ${H}" width="100%"><defs><linearGradient id="zg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#552988" stop-opacity=".22"/><stop offset="1" stop-color="#552988" stop-opacity="0"/></linearGradient></defs>
+      <polygon points="${x(0)},${H - 22} ${pts} ${x(points.length - 1)},${H - 22}" fill="url(#zg)"/><polyline points="${pts}" fill="none" stroke="#552988" stroke-width="2.5" stroke-linejoin="round"/>
+      <circle cx="${x(points.length - 1)}" cy="${y(vs[vs.length - 1])}" r="4.5" fill="#552988" stroke="#fff" stroke-width="2"/>
+      ${points.map((p, i) => i % step === 0 || i === points.length - 1 ? `<text x="${x(i)}" y="${H - 6}" font-size="9.5" fill="#8a8399" text-anchor="${i === 0 ? 'start' : i === points.length - 1 ? 'end' : 'middle'}">${MON[p.d.getMonth()]}</text>` : '').join('')}</svg>`;
+  }
+  const empty = (title, text, btn) => `<div class="zc"><div class="zempty"><h3>${title}</h3><p>${text}</p>${btn ? `<button class="zbtn" data-z="go" data-a="discover">Explore Investment Pools</button>` : ''}</div></div>`;
+
+  /* ---------------- screens ---------------- */
+  const SCREENS = {
+    /* 1. Home Dashboard (17. Empty State when nothing invested) */
+    home() {
+      const t = totals();
+      const quick = `<div class="zsec">Quick Actions</div><div class="zqa">
+        ${[['discover', ic.plus, 'Invest'], ['withdraw', ic.out, 'Withdraw'], ['contrib', ic.cal, 'Contributions'], ['history', ic.list, 'History'], ['calc', ic.calc, 'Calculator'], ['sharia', ic.shield, 'Sharia'], ['risk', ic.gauge, 'Risk Profile'], ['help', ic.help, 'Help'], ['profile', ic.user, 'Settings']]
+          .map(([k, i, l]) => `<button data-z="go" data-a="${k}"><span class="qi">${i}</span>${l}</button>`).join('')}</div>`;
+      const explore = `<div class="zsec">Explore Investment Pools <a data-z="go" data-a="discover">View all</a></div>
+        ${Object.entries(POOLS).map(([k, p]) => `<div class="zc zrow tap" style="padding:12px 14px;margin-bottom:8px" data-z="pool" data-a="${k}">${poolIco(k)}<div class="nm">${p.name}${riskBars(p)}<small>${p.risk} risk · from BHD ${p.min}</small></div>${ic.chev}</div>`).join('')}`;
+      if (!S.holdings.length) {
+        const art = `<svg width="54" height="54" viewBox="0 0 56 56"><circle cx="28" cy="28" r="17" fill="none" stroke="#c9bfe0" stroke-width="2"/>${[0, 1, 2, 3, 4].map(i => { const a = (-90 + i * 72) * Math.PI / 180; return `<circle cx="${(28 + 17 * Math.cos(a)).toFixed(1)}" cy="${(28 + 17 * Math.sin(a)).toFixed(1)}" r="5" fill="${i ? '#552988' : '#e5b021'}"/>`; }).join('')}<circle cx="28" cy="28" r="6" fill="#4fbfa8"/></svg>`;
+        return `${disclaimer()}<h2>Welcome Back, Ahmed</h2>
+          <div class="zc"><div class="zempty"><div class="art">${art}</div>
+            <h3>You don't have any investments yet</h3><p>Start building your wealth with Shariah-compliant pools, from as little as BHD 50.</p>
+            <button class="zbtn" data-z="go" data-a="discover">Explore Investment Pools</button>
+            <button class="zbtn ghost" data-z="go" data-a="risk">Find My Risk Profile</button></div></div>
+          ${quick}${explore}`;
+      }
+      return `${disclaimer()}<h2>Welcome Back, Ahmed</h2><p class="lead">Here's how your investments are doing.</p>
+        <div class="zhero">${ic.wave}<div class="k" style="position:relative">Total Portfolio Value</div><div class="v" style="position:relative"><small>BHD</small>${num(t.v)}</div>
+          <div class="row"><div>Total Contributions<b>${bd(t.gross)}</b></div><div>Investment Returns<b class="${t.ret >= 0 ? 'pos' : 'neg'}">${bd(t.ret, true)}</b></div></div></div>
+        <div class="zsec">My Investment Pools <a data-z="go" data-a="portfolio">Portfolio</a></div>
+        <div class="zc" style="padding:4px 14px">${S.holdings.map((h, i) => `<div class="zrow tap" data-z="holding" data-a="${i}">${poolIco(h.pool)}<div class="nm">${POOLS[h.pool].name}<small>Invested ${bd(h.net)}</small></div><div class="am">${bd(h.value)}<small class="${h.value >= h.net ? 'pos' : 'neg'}">${pct((h.value - h.net) / h.net * 100)}</small></div></div>`).join('')}</div>
+        <div class="zsec">Monthly Contribution</div>
+        <div class="zc zrow tap" style="padding:12px 14px" data-z="go" data-a="contrib"><div class="ico" style="background:#f1ecf7;color:var(--purple)">${sized(ic.cal, 20)}</div>
+          <div class="nm">${t.monthly ? `${bd(t.monthly)} / month` : 'Not set up'}<small>${t.monthly ? `Next on ${fd(nextOn(S.today, t.nextDay))}` : 'Build your investment habit'}</small></div>${ic.chev}</div>
+        ${quick}${explore}`;
+    },
+
+    /* 2. Discover Investment Pools */
+    discover() {
+      return `<h2>Discover Your Investment Options</h2><p class="lead">Choose Your Investment Strategy. Every pool is Shariah-compliant and you can start small.</p>
+        ${S.risk ? '' : `<button class="zdemo" style="margin:0 0 12px" data-z="go" data-a="risk">Not sure? Take the 1-minute risk profile →</button>`}
+        ${Object.entries(POOLS).map(([k, p]) => `<div class="zpool z-${k}">${ic.wave}${S.risk && S.risk.pool === k ? '<span class="rec">Recommended for you</span>' : ''}
+          <h3>${p.name}</h3><p>${p.objective}</p>
+          <div class="meta"><div>Risk Level<b>${p.risk}${riskBars(p)}</b></div><div>Expected Profit*<b>${p.range} a year</b></div><div>Investment Objective<b>${['', 'Capital preservation', 'Steady growth', 'Long-term growth'][p.level]}</b></div><div>Suggested Investment Amount<b>BHD ${p.suggested} / month</b></div></div>
+          <button class="zbtn" data-z="pool" data-a="${k}">View Pool Details</button></div>`).join('')}
+        <p class="lead" style="font-size:11px">*Indicative only. Returns are not guaranteed and may be lower or negative.</p>`;
+    },
+
+    /* 3. Investment Pool Details */
+    pool({ k }) {
+      const p = POOLS[k];
+      return `<div class="zpool z-${k}">${ic.wave}<h3>${p.name}</h3><p>${p.who}</p>
+          <div class="meta"><div>Risk Level<b>${p.risk}${riskBars(p)}</b></div><div>Minimum Investment<b>BHD ${p.min}</b></div></div></div>
+        ${disclaimer()}
+        <div class="zc"><h4>About This Pool</h4><p>${p.name} pools money from many customers and invests it as one portfolio. ${p.who}</p></div>
+        <div class="zc"><h4>Investment Objective</h4><p>${p.objective}</p></div>
+        <div class="zc"><h4>Investment Strategy</h4><p>${p.strategy}</p></div>
+        <div class="zc"><h4>Risk Level <span style="font-size:12.5px;color:var(--grey);font-weight:600">${p.risk}${riskBars(p)}</span></h4><p>${['', 'Small, infrequent changes in value.', 'Moderate changes in value. Some down years are possible.', 'Large changes in value. Losses in some years are likely.'][p.level]}</p></div>
+        <div class="zc"><h4>Asset Allocation</h4>${donut(p.alloc)}</div>
+        <div class="zc"><h4>Historical Performance</h4>${bars(p.hist)}<p style="font-size:11px;color:var(--grey);margin-top:6px">Hypothetical back-tested illustration for this prototype, not actual results. Past performance does not guarantee future returns.</p></div>
+        <div class="zc"><h4>Potential Risks</h4><ul class="zlist">${p.risks.map(r => `<li>${r}</li>`).join('')}</ul></div>
+        <div class="zc"><h4>Fees and Charges</h4><div class="zkv"><span>Operational fee</span><b>1% of each contribution</b></div><div class="zkv"><span>Performance fee</span><b>2% of eligible realized profits</b></div><div class="zkv"><span>Withdrawal fee</span><b>None</b></div></div>
+        <div class="zc"><h4>Sharia Compliance Information <a data-z="go" data-a="sharia">Learn more</a></h4><p>Structured as Mudaraba with the bank as Mudarib (manager). Holdings are screened against AAOIFI standards. No interest-based (riba) instruments.</p></div>
+        <div class="zc"><h4>Important Investment Disclosures</h4><p>The value of your investment can go down as well as up. Profit is shared by an agreed ratio; any loss is borne by investors in proportion to their capital. Withdrawals need ${NOTICE} days' notice.</p></div>
+        <button class="zbtn purple" data-z="startInvest" data-a="${k}">Start Investing</button>`;
+    },
+
+    /* 4. Start Investing */
+    invest() {
+      const d = S.draft, p = POOLS[d.pool];
+      return `<div class="zc zrow" style="padding:12px 14px">${poolIco(d.pool)}<div class="nm">${p.name}<small>${p.risk} risk · ${p.range} expected*</small></div><a style="font-size:12px;font-weight:600;color:var(--purple);cursor:pointer" data-z="go" data-a="discover">Change</a></div>
+        <div class="zc"><h4>How Much Would You Like to Invest?</h4>
+          <div class="zseg"><button class="${d.mode === 'once' ? 'on' : ''}" data-z="mode" data-a="once">One-Time Contribution</button><button class="${d.mode === 'monthly' ? 'on' : ''}" data-z="mode" data-a="monthly">Monthly Recurring</button></div>
+          <div class="zfield"><label>${d.mode === 'once' ? 'Contribution amount' : 'Initial contribution'}</label><div class="zin" id="zAmtBox"><span>BHD</span><input id="zAmt" inputmode="decimal" value="${d.amount}"></div>
+            <div id="zAmtErr"></div>
+            <div class="zhint"><span>Minimum Investment Amount: <b>BHD ${p.min}</b></span><span>Available Balance: <b>${bd(S.balance)}</b></span></div></div>
+        </div>
+        ${d.mode === 'monthly' ? `<div class="zc"><h4>Choose Your Monthly Amount</h4>
+          <div class="zchips">${[25, 50, 100, 150, 200].map(a => `<button class="zchip ${d.monthly === a ? 'on' : ''}" data-z="dset" data-a="monthly|${a}">BHD ${a}</button>`).join('')}</div>
+          <div class="zfield"><label>Select Contribution Date</label><div class="zchips">${[1, 10, 20, 25].map(dd => `<button class="zchip ${d.day === dd ? 'on' : ''}" data-z="dset" data-a="day|${dd}">${ord(dd)} of each month</button>`).join('')}</div></div>
+          <div class="ztoggle" style="margin-top:8px"><div>Enable Auto-Contribution<small>Debit your Current Account automatically each month</small></div><span class="sw ${d.auto ? 'on' : ''}" data-z="dset" data-a="auto|x"></span></div>
+          <p style="font-size:11.5px;color:var(--grey)">First monthly contribution: <b>${fd(nextOn(S.today, d.day))}</b></p></div>` : ''}
+        <button class="zbtn purple" data-z="toReview">Continue</button>`;
+    },
+
+    /* 5. Review and Confirm */
+    review() {
+      const d = S.draft, p = POOLS[d.pool], fee = d.amount * FEE;
+      return `<h2>Review Your Investment</h2><p class="lead">Please check the details before you confirm.</p>
+        <div class="zc"><div class="zkv"><span>Selected Investment Pool</span><b>${p.name}</b></div>
+          <div class="zkv"><span>Initial Contribution</span><b>${bd(d.amount)}</b></div>
+          <div class="zkv"><span>Monthly Contribution</span><b>${d.mode === 'monthly' ? `${bd(d.monthly)} on the ${ord(d.day)}${d.auto ? ' (auto)' : ''}` : 'None'}</b></div>
+          <div class="zkv"><span>Operational Fee (1%)</span><b>${bd(fee)}</b></div>
+          <div class="zkv total"><span>Total Amount</span><b>${bd(d.amount + fee)}</b></div>
+          <div class="zkv" style="border:0"><span>Debit from</span><b>Current Account</b></div></div>
+        <div class="zc"><div class="zkv" style="border:0;padding:0"><span>Performance Fee</span><b>2% of Eligible Realized Profits</b></div><p style="font-size:11.5px;color:var(--grey);margin-top:6px">Charged only on profit you actually realize when you withdraw. Never charged on a loss.</p></div>
+        ${disclaimer()}
+        <div class="zc">
+          <label class="zcheck"><input type="checkbox" data-zc="terms" ${d.terms ? 'checked' : ''}><span>I have read and agree to the <a data-z="go" data-a="sharia">Investment Terms and Conditions</a>.</span></label>
+          <label class="zcheck"><input type="checkbox" data-zc="riskAck" ${d.riskAck ? 'checked' : ''}><span><b>Risk Acknowledgement:</b> I understand returns are not guaranteed, my investment can lose value, and withdrawals need ${NOTICE} days' notice.</span></label></div>
+        <button class="zbtn purple" data-z="confirm" ${d.terms && d.riskAck ? '' : 'disabled'}>Confirm Investment</button>`;
+    },
+
+    /* 18. Pending state */
+    processing() {
+      return `<div class="zc zbig" style="margin-top:40px"><div class="spin" style="margin:0 auto 16px;width:54px;height:54px"><i style="width:36px;height:36px"></i></div><h3>Processing your contribution…</h3><p>Please don't close the app. This usually takes a few seconds.</p></div>`;
+    },
+
+    /* 18. Error state */
+    error({ reason }) {
+      return `<div class="zc zbig" style="margin-top:20px"><div class="ci" style="background:#cc3d4a">${ic.x}</div><h3>Payment Unsuccessful</h3><p>${reason}</p>
+        <div class="zkv" style="margin-top:14px;text-align:left"><span>Available Balance</span><b>${bd(S.balance)}</b></div></div>
+        <button class="zbtn purple" data-z="backToInvest">Change Amount</button><button class="zbtn ghost" data-z="home">Back to Home</button>`;
+    },
+
+    /* 6. Investment Confirmation */
+    success({ txId, monthly }) {
+      const t = S.tx.find(x => x.id === txId), p = POOLS[t.pool];
+      return `<div class="zc zbig"><div class="ci" style="background:var(--teal)">${ic.check}</div><h3>Investment Successfully Submitted</h3><p>Reference ZP-${100230 + txId}</p></div>
+        <div class="zc"><h4>Your Investment Summary</h4>
+          <div class="zkv"><span>Selected Pool</span><b>${p.name}</b></div>
+          <div class="zkv"><span>Contribution Amount</span><b>${bd(t.amount)}</b></div>
+          <div class="zkv"><span>Payment status</span><b>${pill(t.status)}</b></div>
+          <div class="zkv"><span>Monthly Contribution Status</span><b>${monthly ? `${pill('Active')}<br><span style="font-size:11.5px;color:var(--grey);font-weight:500">${bd(monthly.amount)} · next ${fd(nextOn(S.today, monthly.day))}</span>` : pill('Not set up')}</b></div></div>
+        <button class="zbtn purple" data-z="go" data-a="portfolio">View My Portfolio</button><button class="zbtn ghost" data-z="home">Back to Home</button>`;
+    },
+
+    /* 7. My Portfolio */
+    portfolio() {
+      const t = totals();
+      if (!S.holdings.length) return empty('No investments yet', 'Your portfolio will appear here after your first contribution.', true);
+      return `<h2>My Investment Portfolio</h2>
+        <div class="zhero">${ic.wave}<div class="k" style="position:relative">Current Portfolio Value</div><div class="v" style="position:relative"><small>BHD</small>${num(t.v)}</div>
+          <div class="row"><div>Total Amount Invested<b>${bd(t.net)}</b></div><div>Total Returns<b class="${t.ret >= 0 ? 'pos' : 'neg'}">${bd(t.ret, true)}</b></div></div>
+          <div class="row" style="margin-top:8px"><div>Return Percentage<b class="${t.ret >= 0 ? 'pos' : 'neg'}">${pct(t.pct)}</b></div><div>Monthly Contribution<b>${t.monthly ? bd(t.monthly) : '—'}</b></div></div></div>
+        <div class="zc"><h4>Portfolio Performance Chart</h4>${line(S.hist)}
+          <button class="zdemo" data-z="sim">⏩ Prototype: simulate the next 6 months</button></div>
+        <div class="zsec">My Active Investments</div>
+        <div class="zc" style="padding:4px 14px">${S.holdings.map((h, i) => `<div class="zrow tap" data-z="holding" data-a="${i}">${poolIco(h.pool)}<div class="nm">${POOLS[h.pool].name}<small>View Investment Details</small></div><div class="am">${bd(h.value)}<small class="${h.value >= h.net ? 'pos' : 'neg'}">${bd(h.value - h.net, true)}</small></div></div>`).join('')}</div>
+        <div class="zsec">Recent Transactions <a data-z="go" data-a="history">See all</a></div>
+        <div class="zc" style="padding:4px 14px">${S.tx.slice(0, 4).map(txRow).join('')}</div>`;
+    },
+
+    holding({ i }) {
+      const h = S.holdings[i]; if (!h) return SCREENS.portfolio();
+      const p = POOLS[h.pool], r = h.value - h.net;
+      return `<div class="zpool z-${h.pool}">${ic.wave}<h3>${p.name}</h3><p>Current value</p><div style="position:relative;font-size:24px;font-weight:700;margin-top:2px">${bd(h.value)}</div>
+          <div class="meta"><div>Invested<b>${bd(h.net)}</b></div><div>Returns<b>${bd(r, true)} (${pct(r / h.net * 100)})</b></div></div></div>
+        <div class="zc"><div class="zkv"><span>Total contributions (incl. fees)</span><b>${bd(h.gross)}</b></div><div class="zkv"><span>Monthly contribution</span><b>${h.monthly ? `${bd(h.monthly.amount)} ${pill(h.monthly.status)}` : 'Not set up'}</b></div><div class="zkv"><span>Risk level</span><b>${p.risk}</b></div></div>
+        <button class="zbtn purple" data-z="startInvest" data-a="${h.pool}">Invest More</button>
+        <button class="zbtn ghost" data-z="contribFor" data-a="${i}">Manage Monthly Contribution</button>
+        <button class="zbtn ghost" data-z="withdrawFor" data-a="${i}">Withdraw</button>
+        <div class="zsec">Transactions</div><div class="zc" style="padding:4px 14px">${S.tx.filter(t => t.pool === h.pool).slice(0, 5).map(txRow).join('')}</div>`;
+    },
+
+    /* 8. Manage Monthly Contributions */
+    contrib({ i }) {
+      if (!S.holdings.length) return empty('Build Your Investment Habit', 'Start an investment first, then set a monthly amount that is deducted automatically.', true);
+      const idx = i ?? Math.max(0, S.holdings.findIndex(h => h.monthly));
+      const h = S.holdings[idx], m = h.monthly || { amount: 50, day: 1, status: 'Not set up' };
+      if (!S.cedit || S.cedit.i !== idx) S.cedit = { i: idx, amount: m.amount, day: m.day };
+      const e = S.cedit, live = h.monthly && m.status !== 'Cancelled';
+      return `<h2>Build Your Investment Habit</h2><p class="lead">Small monthly amounts add up. Change, pause or stop any time.</p>
+        ${S.holdings.length > 1 ? `<div class="zchips" style="margin-bottom:12px">${S.holdings.map((x, j) => `<button class="zchip ${j === idx ? 'on' : ''}" data-z="contribFor" data-a="${j}" data-r="1">${POOLS[x.pool].name}</button>`).join('')}</div>` : ''}
+        <div class="zc"><div class="zkv"><span>Pool</span><b>${POOLS[h.pool].name}</b></div>
+          <div class="zkv"><span>Status</span><b>${pill(m.status)}</b></div>
+          <div class="zkv"><span>Monthly Contribution Amount</span><b>${live ? bd(m.amount) : '—'}</b></div>
+          <div class="zkv"><span>Next Contribution Date</span><b>${m.status === 'Active' ? fd(nextOn(S.today, m.day)) : '—'}</b></div>
+          <div class="zkv"><span>Payment Account</span><b>Current Account</b></div></div>
+        <div class="zc"><h4>${live ? 'Edit Contribution' : 'Set Up Monthly Contribution'}</h4>
+          <div class="zchips">${[25, 50, 100, 150, 200].map(a => `<button class="zchip ${e.amount === a ? 'on' : ''}" data-z="cset" data-a="amount|${a}">BHD ${a}</button>`).join('')}</div>
+          <div class="zfield"><label>Contribution date</label><div class="zchips">${[1, 10, 20, 25].map(dd => `<button class="zchip ${e.day === dd ? 'on' : ''}" data-z="cset" data-a="day|${dd}">${ord(dd)}</button>`).join('')}</div></div>
+          <button class="zbtn purple" data-z="cSave" data-a="${idx}">Confirm Changes</button></div>
+        ${live ? `<div class="zc">
+          ${m.status === 'Paused' ? `<button class="zbtn" style="margin-top:0" data-z="cStatus" data-a="${idx}|Active">Resume Contributions</button>` : `<button class="zbtn ghost" style="margin-top:0" data-z="cStatus" data-a="${idx}|Paused">Pause Contributions</button>`}
+          ${S.cancelAsk ? `<p style="margin:12px 0 0;font-size:12.5px">Stop all future monthly contributions to ${POOLS[h.pool].name}? Your existing investment stays invested.</p><div style="display:flex;gap:8px"><button class="zbtn ghost" data-z="cAsk" data-a="0">Keep</button><button class="zbtn danger" data-z="cStatus" data-a="${idx}|Cancelled">Yes, cancel</button></div>`
+            : `<button class="zbtn danger" data-z="cAsk" data-a="1">Cancel Recurring Contributions</button>`}</div>` : ''}`;
+    },
+
+    /* 9. Withdraw Investment */
+    withdraw({ i }) {
+      const pending = S.wds.filter(x => x.status !== 'Completed');
+      const status = pending.length ? `<div class="zsec">Withdrawal Request Status</div><div class="zc" style="padding:4px 14px">${pending.map(x => `<div class="zrow tap" data-z="wstatus" data-a="${x.id}"><div class="ico" style="background:#e5b021">↑</div><div class="nm">${POOLS[x.pool].name}<small>Requested ${fd(x.date)}</small></div><div class="am">${bd(x.amount)}<small>${pill(x.status)}</small></div></div>`).join('')}</div>` : '';
+      if (!S.holdings.length) return empty('Nothing to withdraw', 'Once you invest, you can request a withdrawal here.', false) + status;
+      const idx = i ?? 0, h = S.holdings[idx];
+      if (!S.wdraft || S.wdraft.i !== idx) S.wdraft = { i: idx, amount: '' };
+      return `<h2>Withdraw Your Investment</h2><p class="lead">Withdrawals are paid after a ${NOTICE}-day redemption notice period.</p>
+        ${S.holdings.length > 1 ? `<div class="zchips" style="margin-bottom:12px">${S.holdings.map((x, j) => `<button class="zchip ${j === idx ? 'on' : ''}" data-z="withdrawFor" data-a="${j}" data-r="1">${POOLS[x.pool].name}</button>`).join('')}</div>` : ''}
+        <div class="zc"><div class="zkv"><span>Current Investment Value</span><b>${bd(h.value)}</b></div><div class="zkv"><span>Available Redemption Amount</span><b>${bd(h.value)}</b></div></div>
+        <div class="zc"><h4>Enter Withdrawal Amount <a data-z="wMax" data-a="${idx}">Withdraw all</a></h4>
+          <div class="zin" id="zWBox"><span>BHD</span><input id="zWAmt" inputmode="decimal" placeholder="0.000" value="${S.wdraft.amount}"></div><div id="zWErr"></div>
+          <div class="zkv" style="margin-top:8px"><span>Redemption Notice Period</span><b>${NOTICE} days</b></div>
+          <div class="zkv"><span>Estimated Processing Timeline</span><b>Credited by ${fd(addD(S.today, NOTICE + 3))}</b></div>
+          <div class="zkv"><span>Applicable Fees</span><b>2% of realized profit · no exit fee</b></div></div>
+        <button class="zbtn purple" data-z="wReview" data-a="${idx}">Review Withdrawal Request</button>${status}`;
+    },
+    wreview() {
+      const w = S.wdraft, h = S.holdings[w.i], amt = +w.amount;
+      const profit = Math.max(0, (h.value - h.net) / h.value) * amt, perf = profit * PERF;
+      return `<h2>Review Withdrawal Request</h2>
+        <div class="zc"><div class="zkv"><span>Pool</span><b>${POOLS[h.pool].name}</b></div><div class="zkv"><span>Withdrawal amount</span><b>${bd(amt)}</b></div>
+          <div class="zkv"><span>Realized profit in this amount</span><b>${bd(profit)}</b></div><div class="zkv"><span>Performance fee (2%)</span><b>${bd(-perf)}</b></div>
+          <div class="zkv total"><span>You receive</span><b>${bd(amt - perf)}</b></div><div class="zkv" style="border:0"><span>Credit to</span><b>Current Account</b></div></div>
+        <div class="zc"><h4>Estimated Processing Timeline</h4><div class="ztl">
+          <div class="ev now"><span class="d"></span><b>Request submitted</b><small>${fd(S.today)}</small></div>
+          <div class="ev"><span class="d"></span><b>Notice period ends</b><small>${fd(addD(S.today, NOTICE))}</small></div>
+          <div class="ev"><span class="d"></span><b>Units redeemed</b><small>${fd(addD(S.today, NOTICE + 1))}</small></div>
+          <div class="ev"><span class="d"></span><b>Funds credited</b><small>by ${fd(addD(S.today, NOTICE + 3))}</small></div></div></div>
+        <button class="zbtn purple" data-z="wSubmit">Submit Request</button>`;
+    },
+    wstatus({ id }) {
+      const w = S.wds.find(x => x.id === id), done = w.status === 'Completed';
+      return `<div class="zc zbig"><div class="ci" style="background:${done ? 'var(--teal)' : '#e5b021'}">${done ? ic.check : ic.clock}</div>
+          <h3>${done ? 'Withdrawal Completed' : 'Withdrawal Request Submitted'}</h3><p>Reference ZW-${5100 + w.id}</p></div>
+        <div class="zc"><h4>Withdrawal Request Status ${pill(w.status)}</h4><div class="ztl">
+          <div class="ev done"><span class="d"></span><b>Request submitted</b><small>${fd(w.date)}</small></div>
+          <div class="ev ${done ? 'done' : 'now'}"><span class="d"></span><b>Redemption notice period (${NOTICE} days)</b><small>Ends ${fd(addD(w.date, NOTICE))}</small></div>
+          <div class="ev ${done ? 'done' : ''}"><span class="d"></span><b>Units redeemed</b><small>${fd(addD(w.date, NOTICE + 1))}</small></div>
+          <div class="ev ${done ? 'done' : ''}"><span class="d"></span><b>${bd(w.net)} credited to Current Account</b><small>${done ? fd(addD(w.date, NOTICE + 3)) : `by ${fd(addD(w.date, NOTICE + 3))}`}</small></div></div></div>
+        ${done ? '' : `<button class="zdemo" data-z="wFinish" data-a="${w.id}">⏩ Prototype: skip the ${NOTICE}-day notice period</button>`}
+        <button class="zbtn ghost" data-z="home">Back to Home</button>`;
+    },
+
+    /* 10. Sharia Compliance and Disclosures */
+    sharia() {
+      const sec = [
+        ['Sharia-Compliant Investing', 'Every pool invests only in assets and contracts that are Shariah-compliant. Holdings are screened against AAOIFI standards.'],
+        ['Sharia Supervisory Oversight', 'In production, the bank’s Sharia Supervisory Board would review the pool structure, its investments and an annual Sharia audit. This prototype has not been reviewed yet.'],
+        ['Permitted Investment Activities', 'Sukuk, Murabaha placements, Ijara real estate and screened equities. Excluded: conventional finance, alcohol, tobacco, gambling, weapons and other non-permissible activities.'],
+        ['Investment Structure', 'Mudaraba: investors provide the capital (Rab al-Mal) and the bank manages it as Mudarib for a pre-agreed share of the profit.'],
+        ['Profit and Loss Sharing', 'Profit is shared by the agreed ratio. Losses are borne by investors in proportion to their capital, unless caused by the manager\'s negligence or misconduct.'],
+        ['Fees and Charges', 'Operational fee: 1% of each contribution. Performance fee: 2% of eligible realized profits. No withdrawal fee.'],
+        ['Investment Risks', 'Market, profit-rate, credit, liquidity and currency risk. Each pool lists its main risks.'],
+        ['No Guaranteed Returns', 'Expected profit rates are indicative. Your investment can lose value, and you may get back less than you put in.'],
+        ['Legal and Regulatory Disclosures', 'Zumra Pool is a proposed concept. Before launch it would need Central Bank of Bahrain approval, Sharia review and legal review. All fees and periods shown are assumptions.'],
+      ];
+      return `<h2>Sharia Compliance and Disclosures</h2><p class="lead">How Zumra Pool works, in plain language.</p>
+        <div class="zc zfaq">${sec.map(([t, b], i) => `<details ${i < 2 ? 'open' : ''}><summary>${t}</summary><p>${b}</p></details>`).join('')}</div>
+        <button class="zbtn ghost" data-z="toast" data-a="The full disclosure document would open here">Read Full Disclosures</button>`;
+    },
+
+    /* 11. Notifications */
+    notifs() {
+      return S.notifs.length ? `<div class="zc" style="padding:4px 14px">${S.notifs.map(n => `<div class="zrow" style="align-items:flex-start"><div class="ico" style="background:${n.read ? '#c9c2d4' : 'var(--purple)'}">${ic.bell.replace('width="21" height="21"', 'width="17" height="17"')}</div><div class="nm">${n.t}<small style="line-height:1.45">${n.b}</small></div><small style="color:var(--grey);font-size:10.5px;white-space:nowrap;margin-top:2px">${fd(n.d).slice(0, -5)}</small></div>`).join('')}</div>` : empty('No notifications', '', false);
+    },
+
+    /* 12. Transaction History */
+    history() {
+      const F = { All: () => true, Contributions: t => t.type === 'Contribution', 'Operational Fees': t => /Fee/.test(t.type), 'Investment Returns': t => t.type === 'Investment Return', Withdrawals: t => t.type === 'Withdrawal' };
+      const list = S.tx.filter(F[S.txFilter]);
+      return `<h2>Transaction History</h2>
+        <div class="zftabs">${Object.keys(F).map(k => `<button class="zchip ${S.txFilter === k ? 'on' : ''}" data-z="txf" data-a="${k}">${k === 'All' ? 'All Transactions' : k}</button>`).join('')}</div>
+        <div class="zc" style="padding:4px 14px">${list.length ? list.map(txRow).join('') : '<p style="padding:14px 0;text-align:center;color:var(--grey)">No transactions here yet.</p>'}</div>
+        <button class="zbtn ghost" data-z="toast" data-a="Statement prepared (prototype — no file is generated)">Download Statement</button>`;
+    },
+
+    /* 13. Risk Profile Assessment */
+    risk() {
+      const Q = [
+        ['q1', 'How long do you plan to keep this money invested?', [['Less than 2 years', 1], ['2–5 years', 2], ['More than 5 years', 3]]],
+        ['q2', 'If your investment fell 10% in a month, you would…', [['Withdraw my money', 1], ['Wait for it to recover', 2], ['Invest more', 3]]],
+        ['q3', 'What matters most to you?', [['Protecting my money', 1], ['A balance of safety and growth', 2], ['The highest long-term growth', 3]]],
+        ['q4', 'How much investing experience do you have?', [['None', 1], ['Some', 2], ['A lot', 3]]],
+      ];
+      const a = S.riskAns, done = Q.every(([k]) => a[k]);
+      if (S.risk) {
+        const p = POOLS[S.risk.pool];
+        return `<div class="zc zbig"><div class="ci" style="background:${p.color}">${sized(ic.gauge, 30).replace('currentColor', '#fff')}</div><h3>Your profile: ${['', 'Cautious', 'Moderate', 'Adventurous'][p.level]}</h3><p>Based on your answers, the <b>${p.name}</b> fits you best.</p></div>
+          <button class="zbtn purple" data-z="pool" data-a="${S.risk.pool}">View ${p.name}</button><button class="zbtn ghost" data-z="riskRedo">Retake Assessment</button>`;
+      }
+      return `<h2>Risk Profile Assessment</h2><p class="lead">4 quick questions help us suggest a suitable pool.</p>
+        ${Q.map(([k, q, opts], n) => `<div class="zc zq"><b>${n + 1}. ${q}</b>${opts.map(([l, v]) => `<button class="zopt ${a[k] === v ? 'on' : ''}" data-z="ans" data-a="${k}|${v}"><span class="rd"></span>${l}</button>`).join('')}</div>`).join('')}
+        <button class="zbtn purple" data-z="riskDone" ${done ? '' : 'disabled'}>See My Result</button>`;
+    },
+
+    /* 14. Investment Calculator */
+    calc() {
+      const c = S.calc, p = POOLS[c.pool], r = p.rate / 100 / 12;
+      let v = 0; const yearly = [];
+      for (let m = 1; m <= c.years * 12; m++) { v = v * (1 + r) + c.monthly * (1 - FEE); if (m % 12 === 0) yearly.push(v); }
+      const paid = c.monthly * c.years * 12, gain = v - paid, max = v * 1.05, slot = 270 / yearly.length, bw = Math.min(26, slot - 6);
+      return `<h2>Investment Calculator</h2><p class="lead">See what regular monthly contributions could grow to. This is an illustration, not a promise.</p>
+        <div class="zc"><div class="zchips" style="margin-bottom:6px">${Object.entries(POOLS).map(([k, x]) => `<button class="zchip ${c.pool === k ? 'on' : ''}" data-z="calcPool" data-a="${k}">${x.name}</button>`).join('')}</div>
+          <div class="zfield"><label>Monthly contribution: <b style="color:var(--purple)" id="zcM">BHD ${c.monthly}</b></label><input class="zrange" type="range" min="10" max="500" step="10" value="${c.monthly}" data-zr="monthly"></div>
+          <div class="zfield"><label>Period: <b style="color:var(--purple)" id="zcY">${c.years} year${c.years > 1 ? 's' : ''}</b></label><input class="zrange" type="range" min="1" max="10" step="1" value="${c.years}" data-zr="years"></div></div>
+        <div class="zhero">${ic.wave}<div class="k" style="position:relative">Estimated value after ${c.years} year${c.years > 1 ? 's' : ''}</div><div class="v" style="position:relative"><small>BHD</small>${num(v)}</div>
+          <div class="row"><div>You contribute<b>${bd(paid)}</b></div><div>Potential returns<b class="${gain >= 0 ? 'pos' : 'neg'}">${bd(gain, true)}</b></div></div></div>
+        <div class="zc"><svg viewBox="0 0 300 110" width="100%">${yearly.map((y, i) => { const x = 20 + i * slot + (slot - bw) / 2, hp = c.monthly * 12 * (i + 1) / max * 86, hv = y / max * 86; return `<rect x="${x}" y="${92 - hv}" width="${bw}" height="${hv}" rx="3" fill="#4fbfa8"/><rect x="${x}" y="${92 - Math.min(hp, hv)}" width="${bw}" height="${Math.min(hp, hv)}" rx="3" fill="#552988"/><text x="${x + bw / 2}" y="105" font-size="9" text-anchor="middle" fill="#8a8399">Y${i + 1}</text>`; }).join('')}</svg>
+          <div class="zlegend" style="grid-template-columns:1fr 1fr;margin-top:6px"><div><i style="background:#552988"></i>Contributions</div><div><i style="background:#4fbfa8"></i>Potential returns</div></div>
+          <p style="font-size:11px;color:var(--grey);margin-top:8px">Assumes ${p.rate}% a year (hypothetical) after the 1% operational fee. Actual returns are not guaranteed and may be lower or negative.</p></div>
+        <button class="zbtn purple" data-z="startInvest" data-a="${c.pool}">Start Investing</button>`;
+    },
+
+    /* 15. Help and Support */
+    help() {
+      const faq = [
+        ['What is Zumra Pool?', 'A proposed banking service that lets you invest small amounts, once or every month, in Shariah-compliant investment pools.'],
+        ['What is the minimum amount?', 'BHD 50 for the Stable Pool and BHD 100 for the Balanced and Growth pools.'],
+        ['Are my returns guaranteed?', 'No. Returns depend on how the investments perform. Your investment can go down as well as up.'],
+        ['How do I withdraw?', `Go to Withdraw, enter an amount and submit. After a ${NOTICE}-day notice period, the money is credited to your account.`],
+        ['What fees do I pay?', '1% of each contribution, plus 2% of the profit you actually realize when you withdraw. There is no withdrawal fee.'],
+        ['Can I stop my monthly contribution?', 'Yes. You can pause, resume or cancel it any time from Monthly Contributions.'],
+      ];
+      return `<h2>Help and Support</h2><div class="zsec" style="margin-top:6px">Frequently Asked Questions</div>
+        <div class="zc zfaq">${faq.map(([q, ans]) => `<details><summary>${q}</summary><p>${ans}</p></details>`).join('')}</div>
+        <div class="zsec">Contact Us</div>
+        <div class="zc" style="padding:4px 14px">${[['Chat with us', 'Usually replies in a few minutes'], ['Call us', 'Available 24/7'], ['Visit a branch', 'Find your nearest branch']].map(([t, s]) => `<div class="zrow tap" data-z="toast" data-a="Not available in the prototype"><div class="ico" style="background:#f1ecf7;color:var(--purple)">${sized(ic.help, 19)}</div><div class="nm">${t}<small>${s}</small></div>${ic.chev}</div>`).join('')}</div>`;
+    },
+
+    /* 16. Profile and Settings */
+    profile() {
+      const st = S.settings, tg = (k, t, s) => `<div class="ztoggle"><div>${t}<small>${s}</small></div><span class="sw ${st[k] ? 'on' : ''}" data-z="set" data-a="${k}"></span></div>`;
+      return `<h2>Profile and Settings</h2>
+        <div class="zc"><h4>Customer Details</h4><div class="zkv"><span>Name</span><b>Ahmed Ali</b></div><div class="zkv"><span>CPR</span><b>•••••••45</b></div><div class="zkv"><span>Mobile</span><b>+973 •••• ••21</b></div><div class="zkv"><span>Linked account</span><b>Current Account</b></div></div>
+        <div class="zc"><h4>Risk Profile <a data-z="go" data-a="risk">${S.risk ? 'View' : 'Start'}</a></h4><p>${S.risk ? `${['', 'Cautious', 'Moderate', 'Adventurous'][POOLS[S.risk.pool].level]} · suggested ${POOLS[S.risk.pool].name}` : 'Not assessed yet.'}</p></div>
+        <div class="zc"><h4>Account Settings</h4>${tg('notif', 'Push notifications', 'Contribution reminders and updates')}${tg('estatement', 'E-statements', 'Monthly statement by email')}</div>
+        <div class="zc"><h4>Consents</h4>${tg('marketing', 'Marketing offers', 'News about new pools and offers')}<div class="zkv" style="border:0"><span>Investment terms accepted</span><b>${S.termsDate ? fd(S.termsDate) : 'Not yet'}</b></div></div>`;
+    },
+  };
+
+  /* ---------------- actions ---------------- */
+  function startInvest(k) {
+    const p = POOLS[k], has = S.holdings.find(h => h.pool === k);
+    S.draft = { pool: k, amount: has ? p.suggested : p.suggested * 2, mode: has && has.monthly && has.monthly.status === 'Active' ? 'once' : 'monthly', monthly: p.suggested, day: 1, auto: true, terms: false, riskAck: false };
+    go('invest');
+  }
+  const keepAmt = () => { const el = document.getElementById('zAmt'); if (el && +el.value) S.draft.amount = +el.value; };
+  function invest() {
+    const d = S.draft, fee = d.amount * FEE, total = d.amount + fee;
+    go('processing', {}, true);
+    setTimeout(() => {
+      if (total > S.balance) { go('error', { reason: `Your Current Account doesn't have enough balance for ${bd(total)}. No money was taken.` }, true); return; }
+      S.balance -= total;
+      S.termsDate = new Date(S.today);
+      let h = S.holdings.find(x => x.pool === d.pool);
+      if (!h) { h = { pool: d.pool, net: 0, gross: 0, value: 0, monthly: null }; S.holdings.push(h); if (!S.hist.length) S.hist.push({ d: new Date(S.today), v: 0 }); }
+      h.net += d.amount; h.gross += total; h.value += d.amount;
+      if (d.mode === 'monthly') h.monthly = { amount: d.monthly, day: d.day, status: 'Active', auto: d.auto };
+      const t = addTx('Contribution', d.pool, d.amount, 'Processing');
+      addTx('Operational Fee', d.pool, -fee);
+      recordHist();
+      S.stack = [{ s: 'home', p: {} }];
+      go('success', { txId: t.id, monthly: d.mode === 'monthly' ? h.monthly : null });
+      setTimeout(() => { t.status = 'Completed'; notify('Contribution Successful', `${bd(d.amount)} was added to your ${POOLS[d.pool].name}.`); render(); }, 2500);
+    }, 1600);
+  }
+  function simulate() {
+    for (let m = 0; m < 6; m++) {
+      const dt = new Date(S.today); dt.setMonth(dt.getMonth() + 1); S.today = dt;
+      S.holdings.forEach((h, j) => {
+        const p = POOLS[h.pool];
+        const g = h.value * (p.rate / 100 / 12 + Math.sin((m + 1) * 1.9 + j) * p.level * 0.004);
+        h.value += g;
+        addTx('Investment Return', h.pool, g);
+        if (h.monthly && h.monthly.status === 'Active') {
+          const amt = h.monthly.amount, fee = amt * FEE;
+          if (S.balance >= amt + fee) {
+            S.balance -= amt + fee; h.net += amt; h.gross += amt + fee; h.value += amt;
+            addTx('Contribution', h.pool, amt); addTx('Operational Fee', h.pool, -fee);
+          } else addTx('Contribution', h.pool, amt, 'Failed');
+        }
+      });
+      recordHist();
+    }
+    const t = totals();
+    if (t.monthly) notify('Monthly Contribution Reminder', `Your next contribution of ${bd(t.monthly)} is due on ${fd(nextOn(S.today, t.nextDay))}. Please keep enough balance in your Current Account.`);
+    notify('Investment Statement Available', `Your Zumra Pool statement for ${MON[S.today.getMonth()]} ${S.today.getFullYear()} is ready to download.`);
+    notify('Portfolio Performance Update', `Your portfolio is now worth ${bd(t.v)} (${pct(t.pct)} since you started).`);
+    toast('6 months simulated');
+    render();
+  }
+  function submitWithdrawal() {
+    const w = S.wdraft, h = S.holdings[w.i], amt = +w.amount, share = amt / h.value;
+    const perf = Math.max(0, h.value - h.net) * share * PERF;
+    h.net -= h.net * share; h.gross -= h.gross * share; h.value -= amt;
+    const req = { id: S.wds.length + 1, pool: h.pool, amount: amt, net: amt - perf, perf, date: new Date(S.today), status: 'Notice period' };
+    req.tx = addTx('Withdrawal', h.pool, -amt, 'Pending');
+    S.wds.push(req);
+    if (h.value < 0.001) S.holdings.splice(w.i, 1);
+    recordHist();
+    S.wdraft = null;
+    notify('Withdrawal Request Update', `We received your request to withdraw ${bd(amt)}. Expected credit by ${fd(addD(S.today, NOTICE + 3))}.`);
+    go('wstatus', { id: req.id }, true);
+  }
+  function finishWithdrawal(id) {
+    const w = S.wds.find(x => x.id === id);
+    if (w.status === 'Completed') return;
+    w.status = 'Completed'; w.tx.status = 'Completed';
+    if (w.perf > 0) addTx('Performance Fee', w.pool, -w.perf);
+    S.balance += w.net;
+    notify('Withdrawal Request Update', `${bd(w.net)} has been credited to your Current Account.`);
+    render();
+  }
+
+  const A = {
+    go: a => go(a),
+    home: () => home(),
+    toast: a => toast(a),
+    pool: a => go('pool', { k: a }),
+    holding: a => go('holding', { i: +a }),
+    startInvest: a => startInvest(a),
+    mode: a => { keepAmt(); S.draft.mode = a; render(); },
+    dset: a => { keepAmt(); const [k, v] = a.split('|'); S.draft[k] = k === 'auto' ? !S.draft.auto : +v; render(); },
+    toReview: () => {
+      const v = +document.getElementById('zAmt').value, min = POOLS[S.draft.pool].min;
+      const err = !v || v <= 0 ? 'Enter an amount.' : v < min ? `The minimum is BHD ${min}.` : '';
+      if (err) { document.getElementById('zAmtErr').innerHTML = `<div class="zerr">${err}</div>`; document.getElementById('zAmtBox').classList.add('err'); return; }
+      S.draft.amount = v; S.draft.terms = false; S.draft.riskAck = false; go('review');
+    },
+    confirm: () => invest(),
+    backToInvest: () => { S.stack.pop(); render(true); },
+    sim: () => simulate(),
+    contribFor: (a, el) => { S.cedit = null; go('contrib', { i: +a }, el.dataset.r === '1'); },
+    withdrawFor: (a, el) => { S.wdraft = null; go('withdraw', { i: +a }, el.dataset.r === '1'); },
+    cset: a => { const [k, v] = a.split('|'); S.cedit[k] = +v; render(); },
+    cSave: a => {
+      const h = S.holdings[+a], was = h.monthly && h.monthly.status !== 'Cancelled';
+      h.monthly = { ...(h.monthly || { auto: true }), amount: S.cedit.amount, day: S.cedit.day, status: 'Active' };
+      notify('Important Account Updates', `Your monthly contribution to ${POOLS[h.pool].name} is now ${bd(h.monthly.amount)} on the ${ord(h.monthly.day)} of each month.`);
+      toast(was ? 'Monthly contribution updated' : 'Monthly contribution set up'); render();
+    },
+    cStatus: a => { const [i, s] = a.split('|'); S.holdings[+i].monthly.status = s; S.cancelAsk = false; toast({ Active: 'Contributions resumed', Paused: 'Contributions paused', Cancelled: 'Recurring contributions cancelled' }[s]); render(); },
+    cAsk: a => { S.cancelAsk = a === '1'; render(); },
+    wMax: a => { S.wdraft.amount = S.holdings[+a].value.toFixed(3); render(); },
+    wReview: a => {
+      const h = S.holdings[+a], v = +document.getElementById('zWAmt').value;
+      const err = !v || v <= 0 ? 'Enter an amount.' : v > h.value + 1e-9 ? `You can withdraw up to ${bd(h.value)}.` : '';
+      if (err) { document.getElementById('zWErr').innerHTML = `<div class="zerr">${err}</div>`; document.getElementById('zWBox').classList.add('err'); return; }
+      S.wdraft.amount = v; go('wreview');
+    },
+    wSubmit: () => submitWithdrawal(),
+    wstatus: a => go('wstatus', { id: +a }),
+    wFinish: a => finishWithdrawal(+a),
+    txf: a => { S.txFilter = a; render(); },
+    ans: a => { const [k, v] = a.split('|'); S.riskAns[k] = +v; render(); },
+    riskDone: () => { const vs = Object.values(S.riskAns), avg = vs.reduce((x, y) => x + y, 0) / vs.length; S.risk = { pool: avg < 1.75 ? 'stable' : avg < 2.5 ? 'balanced' : 'growth' }; render(true); },
+    riskRedo: () => { S.riskAns = {}; S.risk = null; render(true); },
+    calcPool: a => { S.calc.pool = a; render(); },
+    set: a => { S.settings[a] = !S.settings[a]; render(); },
+  };
+
+  /* ---------------- events ---------------- */
+  const zb = document.getElementById('zBody');
+  zb.addEventListener('click', e => {
+    const t = e.target.closest('[data-z]');
+    if (!t || t.disabled) return;
+    e.preventDefault();
+    if (A[t.dataset.z]) A[t.dataset.z](t.dataset.a, t);
+  });
+  zb.addEventListener('change', e => {
+    const k = e.target.dataset.zc;
+    if (k) { S.draft[k] = e.target.checked; render(); }
+    const r = e.target.dataset.zr;
+    if (r) { S.calc[r] = +e.target.value; render(); }
+  });
+  zb.addEventListener('input', e => {
+    if (e.target.id === 'zAmt') { document.getElementById('zAmtErr').innerHTML = ''; document.getElementById('zAmtBox').classList.remove('err'); }
+    if (e.target.id === 'zWAmt') { S.wdraft.amount = e.target.value; document.getElementById('zWErr').innerHTML = ''; document.getElementById('zWBox').classList.remove('err'); }
+    const r = e.target.dataset.zr;
+    if (r === 'monthly') document.getElementById('zcM').textContent = `BHD ${e.target.value}`;
+    if (r === 'years') document.getElementById('zcY').textContent = `${e.target.value} year${+e.target.value > 1 ? 's' : ''}`;
+  });
+  document.getElementById('zBell').addEventListener('click', () => { S.notifs.forEach(n => { n.read = true; }); if (cur().s !== 'notifs') go('notifs'); else render(); });
+
+  return { open, back, go, home, balance: () => S.balance };
+})();
+
+document.getElementById('zBack').addEventListener('click', () => Z.back());
+document.querySelector('.nav').addEventListener('click', e => {
+  const b = e.target.closest('[data-nav]'); if (!b) return;
+  if (b.dataset.nav === 'home') Z.home(); else Z.go(b.dataset.nav);
+});
+Z.open();
+</script>
+
+</body>
+</html>
